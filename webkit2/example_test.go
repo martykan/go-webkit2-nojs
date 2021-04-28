@@ -7,7 +7,6 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sourcegraph/go-webkit2/webkit2"
-	"github.com/sqs/gojs"
 )
 
 func Example() {
@@ -27,14 +26,6 @@ func Example() {
 			fmt.Println("Load finished.")
 			fmt.Printf("Title: %q\n", webView.Title())
 			fmt.Printf("URI: %s\n", webView.URI())
-			webView.RunJavaScript("window.location.hostname", func(val *gojs.Value, err error) {
-				if err != nil {
-					fmt.Println("JavaScript error.")
-				} else {
-					fmt.Printf("Hostname (from JavaScript): %q\n", val)
-				}
-				gtk.MainQuit()
-			})
 		}
 	})
 

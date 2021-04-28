@@ -1,5 +1,8 @@
 # go-webkit2
 
+> *Fork purpose*
+> This fork removes dependencies on gojs
+
 go-webkit2 provides [Go](http://golang.org) bindings for the
 [WebKitGTK+ 2 API](http://webkitgtk.org/reference/webkit2gtk/stable/index.html). It permits headless operation of WebKit
 as well as embedding a WebView in a GTK+ application.
@@ -60,7 +63,6 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sourcegraph/go-webkit2/webkit2"
-	"github.com/sqs/gojs"
 )
 
 func Example() {
@@ -80,14 +82,6 @@ func Example() {
 			fmt.Println("Load finished.")
 			fmt.Printf("Title: %q\n", webView.Title())
 			fmt.Printf("URI: %s\n", webView.URI())
-			webView.RunJavaScript("window.location.hostname", func(val *gojs.Value, err error) {
-				if err != nil {
-					fmt.Println("JavaScript error.")
-				} else {
-					fmt.Printf("Hostname (from JavaScript): %q\n", val)
-				}
-				gtk.MainQuit()
-			})
 		}
 	})
 

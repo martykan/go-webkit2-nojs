@@ -9,7 +9,6 @@ import (
 
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/sqs/gojs"
 )
 
 func TestNewWebView(t *testing.T) {
@@ -197,64 +196,6 @@ func TestWebView_JavaScriptGlobalContext(t *testing.T) {
 	defer webView.Destroy()
 
 	webView.JavaScriptGlobalContext()
-}
-
-func TestWebView_RunJavaScript(t *testing.T) {
-	webView := NewWebView()
-	defer webView.Destroy()
-
-	wantResultString := "abc"
-	webView.Connect("load-changed", func(_ *glib.Object, loadEvent LoadEvent) {
-		switch loadEvent {
-		case LoadFinished:
-			webView.RunJavaScript(`document.getElementById("foo").innerHTML`, func(result *gojs.Value, err error) {
-				if err != nil {
-					t.Errorf("RunJavaScript error: %s", err)
-				}
-				resultString := webView.JavaScriptGlobalContext().ToStringOrDie(result)
-				if wantResultString != resultString {
-					t.Errorf("want result string %q, got %q", wantResultString, resultString)
-				}
-				gtk.MainQuit()
-			})
-		}
-	})
-
-	glib.IdleAdd(func() bool {
-		webView.LoadHTML(`<p id=foo>abc</p>`, "")
-		return false
-	})
-
-	gtk.Main()
-}
-
-func TestWebView_RunJavaScript_exception(t *testing.T) {
-	webView := NewWebView()
-	defer webView.Destroy()
-
-	wantErr := errors.New("An exception was raised in JavaScript")
-	webView.Connect("load-changed", func(_ *glib.Object, loadEvent LoadEvent) {
-		switch loadEvent {
-		case LoadFinished:
-			webView.RunJavaScript(`throw new Error("foo")`, func(result *gojs.Value, err error) {
-				if result != nil {
-					ctx := webView.JavaScriptGlobalContext()
-					t.Errorf("want result == nil, got %q", ctx.ToStringOrDie(result))
-				}
-				if !reflect.DeepEqual(wantErr, err) {
-					t.Errorf("want error %q, got %q", wantErr, err)
-				}
-				gtk.MainQuit()
-			})
-		}
-	})
-
-	glib.IdleAdd(func() bool {
-		webView.LoadHTML(`<p></p>`, "")
-		return false
-	})
-
-	gtk.Main()
 }
 
 func TestWebView_GetSnapshot(t *testing.T) {
